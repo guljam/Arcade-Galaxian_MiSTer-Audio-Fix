@@ -55,6 +55,7 @@ entity galaxian is
 		mod_porter   : in  std_logic;
 		--
 		Flip_Vertical: in  std_logic;
+		snd_classic  : in  std_logic; -- 1 = FBNeo (old MAME) sound
 		--
 		W_R        : out std_logic_vector(2 downto 0);
 		W_G        : out std_logic_vector(2 downto 0);
@@ -146,6 +147,9 @@ architecture RTL of galaxian is
 	signal W_FIRE             : std_logic := '0';
 	signal W_HIT              : std_logic := '0';
 	signal W_FS               : std_logic_vector( 2 downto 0) := (others => '0');
+	signal W_HIT_WR           : std_logic := '0';
+	signal W_AUDIO_DISC       : std_logic_vector(15 downto 0) := (others => '0');
+	signal W_AUDIO_FBN        : std_logic_vector(15 downto 0) := (others => '0');
 
 	signal blx_comb           : std_logic := '0';
 	signal W_1VF              : std_logic := '0';
@@ -401,10 +405,31 @@ begin
 		I_VOL1        => W_VOL1,
 		I_VOL2        => W_VOL2,
 		I_DAC         => W_DAC,
-		O_AUDIO       => W_AUDIO,
+		O_AUDIO       => W_AUDIO_DISC,
 		O_DBG         => open,
 		O_DBG_STEP    => open
 	);
+
+	W_HIT_WR <= W_SOUND_WE and W_BDI(0) when W_A(2 downto 0) = "011" else '0';
+
+	galaxian_snd_fbn : entity work.GALAXIAN_SND_FBN
+	port map(
+		I_CLK_12M     => W_CLK_12M,
+		I_RESET       => I_RESET,
+		I_BD          => W_BDI,
+		I_PITCH_WE    => W_PITCH,
+		I_FS          => W_FS,
+		I_HIT_WR      => W_HIT_WR,
+		I_FIRE        => W_FIRE,
+		I_VOL1        => W_VOL1,
+		I_VOL2        => W_VOL2,
+		I_DAC         => W_DAC,
+		I_VSYNC       => W_V_SYNC_int,
+		O_AUDIO       => W_AUDIO_FBN,
+		O_SAMPLE      => open
+	);
+
+	W_AUDIO <= W_AUDIO_FBN when snd_classic = '1' else W_AUDIO_DISC;
 
 --------- ROM           -------------------------------------------------------
 

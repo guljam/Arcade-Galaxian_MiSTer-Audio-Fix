@@ -5,6 +5,8 @@ set_global_assignment -name VHDL_FILE rtl/mc_video.vhd -hdl_version VHDL_2008
 set_global_assignment -name VHDL_FILE rtl/mc_stars.vhd
 set_global_assignment -name VHDL_FILE rtl/galaxian_snd_pkg.vhd
 set_global_assignment -name VHDL_FILE rtl/galaxian_snd.vhd
+set_global_assignment -name VHDL_FILE rtl/galaxian_snd_fbn_pkg.vhd
+set_global_assignment -name VHDL_FILE rtl/galaxian_snd_fbn.vhd
 set_global_assignment -name VHDL_FILE rtl/kb_synth.vhd
 set_global_assignment -name VHDL_FILE rtl/mc_missile.vhd
 set_global_assignment -name VHDL_FILE rtl/mc_logic.vhd

@@ -206,6 +206,7 @@ localparam CONF_STR = {
 	"H0O2,Orientation,Vert,Horz;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"O6,Flip Vertical,Off,On;",
+	"O7,Sound,Discrete (MAME),Classic (FBNeo);",
 	"-;",
 	"H1OR,Autosave Hiscores,Off,On;",
 	"P1,Pause options;",
@@ -492,6 +493,7 @@ galaxian galaxian
 	.mod_porter(mod_porter),
 	
 	.Flip_Vertical(status[6]),
+	.snd_classic(status[7]),
 
 	.W_AUDIO(audio_snd),
 	.W_SDAT_C(audio_c)

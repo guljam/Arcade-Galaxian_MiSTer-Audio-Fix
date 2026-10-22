@@ -3,6 +3,7 @@
 --   ROMFILE : binary ROM image
 --   MSEC    : simulated time after reset in ms
 --   COIN_MS / START_MS : press coin / 1P start at these times (0 = never)
+--   CLASSIC : 1 = OSD sound "Classic (FBNeo)"
 -- Output OUTFILE: "<frame> <audio mean over the frame> <audio min> <audio max>"
 -- Watchdog: fails if VSYNC stops (CPU/video deadlock) or audio has metavalues.
 library ieee;
@@ -17,7 +18,8 @@ entity tb_core is
 		OUTFILE  : string  := "core_out.txt";
 		MSEC     : integer := 100;
 		COIN_MS  : integer := 0;
-		START_MS : integer := 0
+		START_MS : integer := 0;
+		CLASSIC  : integer := 0
 	);
 end;
 
@@ -33,7 +35,10 @@ architecture sim of tb_core is
 	signal vs, hs : std_logic;
 	signal done : boolean := false;
 	signal t_ms : integer := 0;
+	signal classic_sel : std_logic;
 begin
+	classic_sel <= '1' when CLASSIC = 1 else '0';
+
 	-- 12 MHz and 6 MHz with aligned rising edges, like the PLL outputs
 	process
 	begin
@@ -52,7 +57,7 @@ begin
 		pause_cpu_n => '1',
 		mod_mooncr => '0', mod_devilfsh => '0', mod_pisces => '0', mod_uniwars => '0',
 		mod_kingbal => '0', mod_orbitron => '0', mod_moonqsr => '0', mod_porter => '0',
-		Flip_Vertical => '0',
+		Flip_Vertical => '0', snd_classic => classic_sel,
 		W_R => open, W_G => open, W_B => open, HBLANK => open, VBLANK => open,
 		W_H_SYNC => hs, W_V_SYNC => vs, W_AUDIO => audio, W_SDAT_C => open, O_CMPBL => open);
 

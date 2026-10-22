@@ -11,3 +11,4 @@ core*.txt
 *.cf
 galaxian_snd_synth.v
 synth.log
+vl/
