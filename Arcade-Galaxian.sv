@@ -398,12 +398,17 @@ arcade_video #(257,9) arcade_video
 );
 
 
-wire [7:0] audio_a, audio_b,audio_c;
-wire [10:0] audio = pause_cpu ? 11'b0 : {1'b0, audio_b, 2'b0} + {3'b0, audio_a} + {2'b00, audio_c, 1'b0};
+wire [15:0] audio_snd;
+wire  [7:0] audio_c;
+// King & Balloon speech DAC (unsigned, only driven for kingbal) mixed in centred
+wire signed [16:0] speech = mod_kingbal ? {{4{~audio_c[7]}}, audio_c[6:0], 6'd0} : 17'sd0;
+wire signed [16:0] mix = $signed({audio_snd[15], audio_snd}) + speech;
+wire [15:0] audio = pause_cpu ? 16'd0 :
+                    (mix[16] != mix[15]) ? {mix[16], {15{~mix[16]}}} : mix[15:0];
 
-assign AUDIO_L = {audio, 5'd0};
-assign AUDIO_R = {audio, 5'd0};
-assign AUDIO_S = 0;
+assign AUDIO_L = audio;
+assign AUDIO_R = audio;
+assign AUDIO_S = 1;
 
 // dips for mra
 wire [7:0] sw0_galaxian = sw[0] & { m_test, 1'b1 , 1'b1, m_fire, m_right, m_left, mod_pisces & m_coin, ~mod_pisces & m_coin};
@@ -488,8 +493,7 @@ galaxian galaxian
 	
 	.Flip_Vertical(status[6]),
 
-	.W_SDAT_A(audio_a),
-	.W_SDAT_B(audio_b),
+	.W_AUDIO(audio_snd),
 	.W_SDAT_C(audio_c)
 );
 

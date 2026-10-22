@@ -1,0 +1,13 @@
+work/
+wcore/
+*.exe
+*.raw
+*.wav
+*.bin
+rtl*.txt
+fix*.txt
+core*.txt
+*.o
+*.cf
+galaxian_snd_synth.v
+synth.log

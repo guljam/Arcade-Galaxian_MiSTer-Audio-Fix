@@ -63,8 +63,7 @@ entity galaxian is
 		VBLANK     : out std_logic;
 		W_H_SYNC   : out std_logic;
 		W_V_SYNC   : out std_logic;
-		W_SDAT_A   : out std_logic_vector( 7 downto 0) := (others => '0');
-		W_SDAT_B   : out std_logic_vector( 7 downto 0) := (others => '0');
+		W_AUDIO    : out std_logic_vector(15 downto 0) := (others => '0'); -- signed
 		W_SDAT_C   : out std_logic_vector( 7 downto 0) := (others => '0');
 		O_CMPBL    : out std_logic
 	);
@@ -161,10 +160,8 @@ architecture RTL of galaxian is
 	signal W_MS_G             : std_logic := '0';
 	signal W_MS_B             : std_logic := '0';
 
-	signal new_sw             : std_logic_vector( 2 downto 0) := (others => '0');
 	signal in_game            : std_logic_vector( 1 downto 0) := (others => '0');
 	signal ROM_D              : std_logic_vector( 7 downto 0) := (others => '0');
-	signal rst_count          : std_logic_vector( 3 downto 0) := (others => '0');
 	signal W_COL              : std_logic_vector( 2 downto 0) := (others => '0');
 	signal W_STARS_B          : std_logic_vector( 1 downto 0) := (others => '0');
 	signal W_STARS_G          : std_logic_vector( 1 downto 0) := (others => '0');
@@ -391,28 +388,22 @@ begin
 		O_NOISE       => open
 	);
 
-	mc_sound_a : entity work.MC_SOUND_A
+	galaxian_snd : entity work.GALAXIAN_SND
 	port map(
 		I_CLK_12M     => W_CLK_12M,
-		I_CLK_6M      => W_CLK_6M,
-		I_H_CNT1      => W_H_CNT(1),
+		I_RESET       => I_RESET,
+		I_MOONCR      => W_MOONCR,
 		I_BD          => W_BDI,
-		I_PITCH       => W_PITCH,
+		I_PITCH_WE    => W_PITCH,
+		I_FS          => W_FS,
+		I_HIT         => W_HIT,
+		I_FIRE        => W_FIRE,
 		I_VOL1        => W_VOL1,
 		I_VOL2        => W_VOL2,
-		O_SDAT        => W_SDAT_A,
-		O_DO          => open
-	);
-
-	vmc_sound_b : entity work.MC_SOUND_B
-	port map(
-		I_CLK1        => W_CLK_6M,
-		I_RSTn        => rst_count(3),
-		I_SW          => new_sw,
 		I_DAC         => W_DAC,
-		I_FS          => W_FS,
-		O_SDAT        => W_SDAT_B,
-		I_KINGBAL     => mod_kingbal
+		O_AUDIO       => W_AUDIO,
+		O_DBG         => open,
+		O_DBG_STEP    => open
 	);
 
 --------- ROM           -------------------------------------------------------
@@ -527,19 +518,6 @@ begin
 	W_RESETn  <= not I_RESET;
 	W_BDO     <= W_SW_DO  or W_VID_DO or W_CPU_RAM_DO or W_CPU_ROM_DOB ;
 	W_CPU_WR  <= not W_CPU_WRn;
-
-	new_sw <= (W_FS(2) or W_FS(1) or W_FS(0)) & W_HIT & W_FIRE;
-
-	process(W_CLK_6M, I_RESET)
-	begin
-		if (I_RESET = '1') then
-			rst_count <= (others => '0');
-		elsif rising_edge( W_CLK_6M) then
-			if ( W_CPU_CLK_EN = '1' and rst_count /= x"f") then
-				rst_count <= rst_count + 1;
-			end if;
-		end if;
-	end process;
 
 
 -----  Parts 9L ---------
