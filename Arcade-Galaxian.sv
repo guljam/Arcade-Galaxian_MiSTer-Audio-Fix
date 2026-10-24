@@ -206,7 +206,7 @@ localparam CONF_STR = {
 	"H0O2,Orientation,Vert,Horz;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"O6,Flip Vertical,Off,On;",
-	"O7,Sound,Discrete (MAME),Classic (FBNeo);",
+	"O7,Sound,Analog Circuit,Legacy Synth;",
 	"-;",
 	"H1OR,Autosave Hiscores,Off,On;",
 	"P1,Pause options;",

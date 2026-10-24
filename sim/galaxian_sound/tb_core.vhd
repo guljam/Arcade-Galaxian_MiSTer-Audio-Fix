@@ -3,7 +3,7 @@
 --   ROMFILE : binary ROM image
 --   MSEC    : simulated time after reset in ms
 --   COIN_MS / START_MS : press coin / 1P start at these times (0 = never)
---   CLASSIC : 1 = OSD sound "Classic (FBNeo)"
+--   CLASSIC : 1 = OSD sound "Legacy Synth" (FBNeo)
 -- Output OUTFILE: "<frame> <audio mean over the frame> <audio min> <audio max>"
 -- Watchdog: fails if VSYNC stops (CPU/video deadlock) or audio has metavalues.
 library ieee;

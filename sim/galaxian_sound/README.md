@@ -1,7 +1,7 @@
 # Galaxian sound verification
 
 Tools used to build and check `rtl/galaxian_snd.vhd` against MAME, and
-`rtl/galaxian_snd_fbn.vhd` (OSD "Classic (FBNeo)") against FBNeo.
+`rtl/galaxian_snd_fbn.vhd` (OSD "Legacy Synth") against FBNeo.
 Background and results: `docs/fixes-2026-10-22.md`, `docs/fixes-2026-10-23.md`.
 
 Tools: MSYS2 mingw64 (`g++`, `ghdl` 6 with LLVM backend, `verilator` 5), Python 3 with numpy/scipy, MAME.
@@ -56,7 +56,7 @@ sh build_core.sh
 timeout 600 ./tb_core.exe -gROMFILE=galaxian_rom.bin -gMSEC=1000 --ieee-asserts=disable
 ```
 
-Classic (FBNeo) sound:
+Legacy Synth (FBNeo) sound:
 
 ```sh
 g++ -O2 -o fbn_ref.exe fbn_ref.cpp && g++ -O2 -o fbn_fix.exe fbn_fix.cpp

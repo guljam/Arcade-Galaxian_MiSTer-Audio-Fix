@@ -16,7 +16,8 @@ entity tb_galaxian_snd_fbn is
 	generic (
 		WRITES  : string  := "writes.txt";
 		OUTFILE : string  := "rtl_fbn.txt";
-		MSEC    : integer := 1000
+		MSEC    : integer := 1000;
+		MOONCR  : integer := 0     -- 1 = Moon Cresta mixer
 	);
 end;
 
@@ -31,11 +32,13 @@ architecture sim of tb_galaxian_snd_fbn is
 	signal dac   : std_logic_vector(3 downto 0) := (others => '0');
 	signal audio : std_logic_vector(15 downto 0);
 	signal sample : std_logic;
+	signal mooncr_sel : std_logic;
 begin
+	mooncr_sel <= '1' when MOONCR = 1 else '0';
 	clk <= not clk after TCLK / 2 when not done;
 
 	dut : entity work.GALAXIAN_SND_FBN port map (
-		I_CLK_12M => clk, I_RESET => rst, I_BD => bd, I_PITCH_WE => pwe,
+		I_CLK_12M => clk, I_RESET => rst, I_MOONCR => mooncr_sel, I_BD => bd, I_PITCH_WE => pwe,
 		I_FS => fs, I_HIT_WR => hit_wr, I_FIRE => fire, I_VOL1 => vol1, I_VOL2 => vol2,
 		I_DAC => dac, I_VSYNC => vs, O_AUDIO => audio, O_SAMPLE => sample);
 

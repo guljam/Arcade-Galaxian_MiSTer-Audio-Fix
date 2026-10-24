@@ -2,7 +2,7 @@
 // to Verilog with "ghdl --synth", see vl_fbn.sh). Same stimulus and timing as
 // tb_galaxian_snd_fbn.vhd and fbn_fix.cpp, same output format.
 //
-// usage: vl_fbn <writes.txt> <out.txt> <msec>
+// usage: vl_fbn <writes.txt> <out.txt> <msec> [mooncr]
 // Watchdog: fails if no new sample strobe for 1000 clocks.
 
 #include <cstdint>
@@ -19,6 +19,7 @@ int main(int argc, char **argv)
 	FILE *of = fopen(argv[2], "w"); if (!of) { perror(argv[2]); return 1; }
 	int64_t msec = atoll(argv[3]);
 	VGALAXIAN_SND_FBN *d = new VGALAXIAN_SND_FBN;
+	d->I_MOONCR = argc > 4 ? atoi(argv[4]) : 0;
 	d->I_CLK_12M = 0; d->I_RESET = 1; d->I_BD = 0; d->I_PITCH_WE = 0; d->I_FS = 0; d->I_HIT_WR = 0;
 	d->I_FIRE = 0; d->I_VOL1 = 0; d->I_VOL2 = 0; d->I_DAC = 0; d->I_VSYNC = 0;
 	d->eval();

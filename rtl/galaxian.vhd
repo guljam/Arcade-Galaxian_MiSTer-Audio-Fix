@@ -416,6 +416,7 @@ begin
 	port map(
 		I_CLK_12M     => W_CLK_12M,
 		I_RESET       => I_RESET,
+		I_MOONCR      => W_MOONCR,
 		I_BD          => W_BDI,
 		I_PITCH_WE    => W_PITCH,
 		I_FS          => W_FS,

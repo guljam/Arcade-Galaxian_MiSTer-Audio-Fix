@@ -4,9 +4,10 @@
 // Reads the constants from rtl/galaxian_snd_fbn_pkg.vhd. The output must be
 // identical to the testbench output; long runs are done with this model.
 //
-// usage: fbn_fix <pkg.vhd> <writes.txt> <out.txt> <msec> [audio.raw]
+// usage: fbn_fix <pkg.vhd> <writes.txt> <out.txt> <msec> [audio.raw|-] [mooncr]
 //   out.txt  : one line per sample (every 250 clocks), the audio value
-//   audio.raw: optional int16 stream, 48 kHz
+//   audio.raw: optional int16 stream, 48 kHz ("-": none)
+//   mooncr   : 1 = Moon Cresta mixer (I_MOONCR, swarm level)
 
 #include <cstdint>
 #include <cstdio>
@@ -57,6 +58,7 @@ static int clip16(i64 x) { return x > 32767 ? 32767 : x < -32768 ? -32768 : (int
 static unsigned lfsr_shift(unsigned g) { unsigned n = (g << 1) & 0x3ffff; n |= (((n >> 17) & 1) ^ 1) ^ ((n >> 5) & 1); return n; }
 
 static int solo = -1;   // debug: 0 tone, 1 noise, 2 fire, 3 swarm (env FBN_SOLO)
+static int mooncr = 0;  // I_MOONCR
 
 struct In { int rst = 1, bd = 0, pwe = 0, fs = 0, hit_wr = 0, fire = 0, vol1 = 0, vol2 = 0, dac = 0, vs = 0; };
 
@@ -164,7 +166,7 @@ struct Dut {
 				else { n.sh_idx = ni; n.sh_frac = nf; }
 			}
 			for (int i = 0; i < 3; i++) {
-				if (((o.fs >> i) & 1) && (solo < 0 || solo == 3)) b = clip16(b + (((o.lfo_pos[i] >> 36) & 1) ? -248 : 244));
+				if (((o.fs >> i) & 1) && (solo < 0 || solo == 3)) b = clip16(b + (((o.lfo_pos[i] >> 36) & 1) ? (mooncr ? -826 : -1562) : (mooncr ? 813 : 1537)));
 				i64 p = o.lfo_pos[i] + o.lfo_step[i];
 				n.lfo_pos[i] = p > (i64(32) << 32) ? 0 : p;
 			}
@@ -192,13 +194,14 @@ struct Dut {
 
 int main(int argc, char **argv)
 {
-	if (argc < 5) { fprintf(stderr, "usage: fbn_fix <pkg.vhd> <writes.txt> <out.txt> <msec> [audio.raw]\n"); return 1; }
+	if (argc < 5) { fprintf(stderr, "usage: fbn_fix <pkg.vhd> <writes.txt> <out.txt> <msec> [audio.raw|-] [mooncr]\n"); return 1; }
 	if (getenv("FBN_SOLO")) solo = atoi(getenv("FBN_SOLO"));
 	load_pkg(argv[1]);
 	Dut d; d.init();
 	FILE *wf = fopen(argv[2], "r"); if (!wf) { perror(argv[2]); return 1; }
 	FILE *of = fopen(argv[3], "w"); if (!of) { perror(argv[3]); return 1; }
-	FILE *rf = argc > 5 ? fopen(argv[5], "wb") : nullptr;
+	FILE *rf = argc > 5 && strcmp(argv[5], "-") ? fopen(argv[5], "wb") : nullptr;
+	mooncr = argc > 6 ? atoi(argv[6]) : 0;
 	i64 msec = atoll(argv[4]);
 	double t; char k; int a, v;
 	bool have = fscanf(wf, "%lf %c %d %d", &t, &k, &a, &v) == 4;
