@@ -1,4 +1,36 @@
 ---------------------------------------------------------------------------------
+--
+-- Arcade-Galaxian_MiSTer-Audio-Fix
+-- Galaxian core for MiSTer with a rewritten sound section.
+-- Based on MiSTer-devel/Arcade-Galaxian_MiSTer (original credits below).
+--
+-- OSD "Sound" option (can be switched during play):
+--   Analog Circuit : default. Model of the analog sound circuit after MAME's
+--                    discrete netlist (MAME 0.133u2 and later): 555 timers,
+--                    RC networks, op-amp filter and mixer with the real part
+--                    values.
+--   Legacy Synth   : the older synthesized sound of MAME 0.36b11 - 0.133u1,
+--                    as still used by FBNeo (softer timbre). The swarm hum is
+--                    raised to near the Analog Circuit level (FBNeo plays it
+--                    about 17 dB quieter), so switching mainly changes the
+--                    timbre, not the balance.
+--
+-- Changes from the original core:
+--   * New sound blocks: rtl/galaxian_snd.vhd (Analog Circuit) and
+--     rtl/galaxian_snd_fbn.vhd (Legacy Synth). They replace the old
+--     mc_sound_* blocks and the fire/explosion sample ROMs.
+--   * Swarm hum: pulse waves instead of a sine-like tone, and the rhythm
+--     follows the non-linear LFO of the circuit (it speeds up correctly as
+--     a stage goes on).
+--   * Applies to every game of this core that uses the Galaxian sound
+--     hardware; King & Balloon speech is unchanged.
+--   * Cause, measurements and verification: docs/fixes-2026-10-22.md,
+--     docs/fixes-2026-10-23.md, docs/fixes-2026-10-24.md
+--     (the simulation tools they mention are not part of this repository).
+--
+-- Release: releases/Arcade-Galaxian_20261024.rbf
+--
+---------------------------------------------------------------------------------
 -- 
 -- Arcade: Galaxian port to MiSTer by Sorgelig
 -- 15 November 2017
